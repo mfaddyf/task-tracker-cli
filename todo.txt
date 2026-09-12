@@ -1,0 +1,39 @@
+features to include :
+[ . ] - add , upodate , delete
+[ . ] - mark a task as [ done , in-progress , to-do ]
+[ . ] - list all tasks
+[ . ] - list all types of tasks [ list type ]
+[ . ] - list all tasks that are done [ list status done ]
+[ . ] - list all tasks that are in progress [ list status in-progress ]
+[ . ] - list all tasks that are to be started [ list status to-do]
+[ . ] - list all tasks by type ( college module , shopping , birthdays , meetings , etc ) [ list type college ]
+[ . ] - add a due date to all tasks
+    [ . ] - calculate the time until said due date for each task
+[ . ] - add a note to each task
+[ . ] - add a help command
+[ . ] - tell the user if the task if overdue [ list overdue ] , along with how far away ago it was due
+[ . ] - show (num) command to show tasks individually
+
+constraints to follow :
+> use positional arguments to accept any user inputs
+> use a json file to store tasks , if there isn't a json file then create one
+> use the native file system module of python to interact with the json file
+> normalise to lowercase to avoid labeling issues?
+> highest existing id + one
+> object wrapping nextId and tasks
+> dd-mm-yyyy for the date
+> dueDate , note added later after note is made , taskType should be added during creation
+> command for marking status should be mark 1 done , mark 1 in-progress , mark 1 to-do
+> if no taskType give, assign general
+> default sort for lists should be due date ascending
+> list overdue should only list overdue tasks, not ones that are completed
+
+task properties :
+    id - unique identifier for each task
+    description - a short description of the task
+    note - a longer note attached to the task that includes other details
+    status - the status of the task [ done , in-progress , to-do ]
+    taskType - add a custom type organiser to each task , examples like ( college module , shopping , birthdays , meetings , etc )
+    createdAt - time the task was created
+    updatedAt - time the task was last updated
+    dueDate - the due date of the task which also includes the time it is due (if no time included, assume 23:59)
