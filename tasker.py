@@ -1,9 +1,11 @@
 import json
 import os
+import sys
+from pathlib import Path
 from datetime import datetime
 
 # the file everything lives in
-TASKS_FILE = "tasks.json"
+TASKS_FILE = Path(__file__).parent / "tasks.json"
 # what a brand new file should contain
 EMPTY_DATA = {"nextId": 1, "tasks": []}
 
@@ -85,7 +87,48 @@ def save_tasks(data):
         json.dump(data, f, indent = 2)
     pass
 
+# ---
+# HELP COMMAND
+# ___
+
+def print_help():
+    """show the available commands."""
+    print("Usage:")
+    print("  add \"description\"   add a new task")
+    print("  list                 list all tasks")
+    print("  help                 show this message")
+
+# ---
+# TO RUN APP
+# ___
+
+def main():
+    # no command given at all
+    if len(sys.argv) < 2:
+        print_help()
+        return
+
+    command = sys.argv[1]
+    args = sys.argv[2:]   # everything after the command
+
+    if command == "add":
+        if len(sys.argv) < 2:
+                print_help()
+                return
+        add_task(args[0])
+        print("Task added sucessfully!")
+        pass
+
+    elif command == "list":
+        list_all_tasks()
+        pass
+
+    elif command == "help":
+        print_help()
+
+    else:
+        print(f"Unknown command: {command}")
+        print_help()
+
 if __name__ == "__main__":
-    #new_id = add_task("Buy groceries")
-    #print(f"Task added successfully (ID: {new_id})")
-    list_all_tasks()
+    main()
