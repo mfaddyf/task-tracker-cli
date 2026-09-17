@@ -8,6 +8,8 @@ from datetime import datetime
 TASKS_FILE = Path(__file__).parent / "tasks.json"
 # what a brand new file should contain
 EMPTY_DATA = {"nextId": 1, "tasks": []}
+# the three valid statuses 
+STATUSES = ["to-do", "in-progress", "done"]
 
 # ---
 # ADD 
@@ -56,6 +58,40 @@ def list_all_tasks():
         print(f"{task['id']} | {task['description']} > [{task['status']}]")
 
 # ---
+# SEARCHING
+# ___
+
+def find_task(tasks, task_id):
+    """return the task with this id, or none if there isn't one."""
+    for task in tasks:
+        if task["id"] == task_id:
+            return task
+    return None
+
+# ---
+# EDITING
+# ___
+
+"""editing status"""
+def mark_task(task_id, new_status):
+    """change a task's status and update its timestamp."""
+    data = load_tasks()
+    task = find_task(data["tasks"], task_id)
+
+    if task is None:
+        print(f"Error: no task with id {task_id}.")
+        return
+
+    if new_status not in STATUSES:
+        print(f"Error: status must be one of: {', '.join(STATUSES)}")
+        return
+
+    task["status"] = new_status
+    task["updatedAt"] = datetime.now().isoformat()
+    save_tasks(data)
+    print(f"Task {task_id} marked as {new_status}.")
+
+# ---
 # SAVING & LOADING
 # ___
 
@@ -102,6 +138,24 @@ def print_help():
 # TO RUN APP
 # ___
 
+def parse_id(text):
+    """turn a command line argument into an id, or none if it isn't a number."""
+    try:
+        return int(text)
+    except ValueError:
+        print("Error: id must be a number.")
+        return None
+
+
+def print_help():
+    """show the available commands."""
+    print("Usage:")
+    print("  add \"description\"    add a new task")
+    print("  mark ID status       set a task's status (to-do, in-progress, done)")
+    print("  list                 list all tasks")
+    print("  help                 show this message")
+
+
 def main():
     # no command given at all
     if len(sys.argv) < 2:
@@ -112,16 +166,24 @@ def main():
     args = sys.argv[2:]   # everything after the command
 
     if command == "add":
-        if len(sys.argv) < 2:
-                print_help()
-                return
-        add_task(args[0])
-        print("Task added sucessfully!")
-        pass
+        if not args:
+            print("Error: add needs a description.")
+            return
+        new_id = add_task(args[0])
+        print(f"Task added successfully (ID: {new_id})")
+
+    elif command == "mark":
+        if len(args) < 2:
+            print("Error: mark needs an id and a status.")
+            print("  e.g. mark 1 done")
+            return
+        task_id = parse_id(args[0])
+        if task_id is None:
+            return
+        mark_task(task_id, args[1])
 
     elif command == "list":
         list_all_tasks()
-        pass
 
     elif command == "help":
         print_help()
