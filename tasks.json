@@ -20,16 +20,6 @@
       "createdAt": "2026-09-13T21:47:10.086251",
       "updatedAt": "2026-09-13T21:47:10.086251",
       "dueDate": null
-    },
-    {
-      "id": 3,
-      "description": "go shopping",
-      "note": "",
-      "status": "in-progress",
-      "taskType": "general",
-      "createdAt": "2026-09-17T23:05:02.495035",
-      "updatedAt": "2026-09-17T23:05:19.128447",
-      "dueDate": null
     }
   ]
 }

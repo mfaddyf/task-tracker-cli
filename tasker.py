@@ -41,6 +41,35 @@ def add_task(description):
     return task["id"]
 
 # ---
+# DELETE 
+# ___
+
+def delete_task(task_id):
+    """remove a task from the file."""
+    data = load_tasks()
+    task = find_task(data["tasks"], task_id)
+
+    # if task is none, print an error and return
+    if task is None:
+        print(f"Error: no task with id {task_id}.")
+        return
+
+    # otherwise:
+    # 1. remove it from data["tasks"]
+    # 2. save data
+    # 3. print a confirmation
+    data["tasks"].remove(task)
+    save_tasks(data)
+    print("Task sucessfully deleted!")
+    pass
+
+# ---
+# UPDATE 
+# ___
+
+
+
+# ---
 # LISTING
 # ___
 
@@ -187,6 +216,18 @@ def main():
 
     elif command == "help":
         print_help()
+
+    elif command == "update":
+    # needs two args: the id and the new description
+    # same shape as the mark branch
+        pass
+
+    elif command == "delete":
+        task_id = parse_id(args[0])
+        if task_id is None:
+            return
+        delete_task(task_id)
+        pass
 
     else:
         print(f"Unknown command: {command}")

@@ -1,6 +1,6 @@
 features to include :
 [ . ] - add , update , delete
-[ . ] - mark a task as [ done , in-progress , to-do ]
+[ x ] - mark a task as [ done , in-progress , to-do ]
 [ x ] - list all tasks
 [ . ] - list all types of tasks [ list type ]
 [ . ] - list all tasks that are done [ list status done ]
@@ -10,7 +10,7 @@ features to include :
 [ . ] - add a due date to all tasks
     [ . ] - calculate the time until said due date for each task
 [ . ] - add a note to each task
-[ . ] - add a help command
+[ x ] - add a help command
 [ . ] - tell the user if the task if overdue [ list overdue ] , along with how far away ago it was due
 [ . ] - show (num) command to show tasks individually
 
