@@ -67,7 +67,19 @@ def delete_task(task_id):
 # UPDATE 
 # ___
 
+def update_task(task_id, new_description):
+    """change a task's description."""
+    data = load_tasks()
+    task = find_task(data["tasks"], task_id)
 
+    if task is None:
+        print(f"Error: no task with id {task_id}.")
+        return
+
+    task["description"] = new_description
+    task["updatedAt"] = datetime.now().isoformat()
+    save_tasks(data)
+    print(f"Task {task_id} updated.")
 
 # ---
 # LISTING
@@ -194,6 +206,7 @@ def main():
     command = sys.argv[1]
     args = sys.argv[2:]   # everything after the command
 
+    # adding a task
     if command == "add":
         if not args:
             print("Error: add needs a description.")
@@ -201,6 +214,7 @@ def main():
         new_id = add_task(args[0])
         print(f"Task added successfully (ID: {new_id})")
 
+    # changing the status
     elif command == "mark":
         if len(args) < 2:
             print("Error: mark needs an id and a status.")
@@ -211,17 +225,26 @@ def main():
             return
         mark_task(task_id, args[1])
 
+    # listing all tasks
     elif command == "list":
         list_all_tasks()
 
+    # listing all commands
     elif command == "help":
         print_help()
 
+    # updating the task
     elif command == "update":
-    # needs two args: the id and the new description
-    # same shape as the mark branch
-        pass
+        if len(args) < 2:
+                print("Error: update needs //example//.")
+                print("  e.g. //")
+                return
+        task_id = parse_id(args[0])
+        if task_id is None:
+                return
+        update_task(task_id, args[1])
 
+    # deleting the task
     elif command == "delete":
         task_id = parse_id(args[0])
         if task_id is None:
