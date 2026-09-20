@@ -1,5 +1,5 @@
 features to include :
-[ . ] - add , update , delete
+[ x ] - add , update , delete
 [ x ] - mark a task as [ done , in-progress , to-do ]
 [ x ] - list all tasks
 [ . ] - list all types of tasks [ list type ]
