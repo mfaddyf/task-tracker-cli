@@ -96,7 +96,7 @@ def list_all_tasks():
         return
 
     for task in tasks:
-        print(f"{task['id']} | {task['description']} > [{task['status']}]")
+        print_task_line(task)
 
 # ---
 # SEARCHING
@@ -131,6 +131,71 @@ def mark_task(task_id, new_status):
     task["updatedAt"] = datetime.now().isoformat()
     save_tasks(data)
     print(f"Task {task_id} marked as {new_status}.")
+
+"""giving a task a type or catergory it's sorted under"""
+def set_type(task_id, task_type):
+    """give a task a type/category."""
+    data = load_tasks()
+    task = find_task(data["tasks"], task_id)
+
+    # if task is None, print an error and return
+    if task is None:
+            print(f"Error: no task with id {task_id}.")
+            return
+    # otherwise:
+    # 1. set task["taskType"] to the type, lowercased and stripped
+    task["taskType"] = task_type
+    # 2. refresh task["updatedAt"]
+    task["updatedAt"] = datetime.now().isoformat()
+    # 3. save and confirm
+    save_tasks(data)
+    print(f"Task {task_id} labelled as type : {task_type}.")
+    pass
+
+
+# ---
+# LISTING
+# ___
+
+def print_task_line(task):
+    """print one task as a single line."""
+    print(f"{task['id']}. [{task['status']}] > {task['description']} ({task['taskType']})")
+
+def list_types():
+    """print every distinct type currently in use."""
+    data = load_tasks()
+
+    # a set ignores duplicates, so each type only appears once
+    types = set()
+    for task in data["tasks"]:
+        types.add(task["taskType"])
+
+    if not types:
+        print("No tasks yet, so no types.")
+        return
+
+    print("Task types:")
+    for task_type in sorted(types):
+        print(f"  {task_type}")
+
+def list_by_type(task_type):
+    """print only tasks of this type."""
+    data = load_tasks()
+    wanted = task_type.strip().lower()
+
+    # collect the matching tasks first, so we know if there are none
+    matches = []
+    for task in data["tasks"]:
+        if task["taskType"] == wanted:
+            matches.append(task)
+
+    if not matches:
+        print(f"No tasks of type '{wanted}'.")
+        return
+
+    for task in matches:
+        print_task_line(task)
+
 
 # ---
 # SAVING & LOADING
@@ -170,10 +235,23 @@ def save_tasks(data):
 
 def print_help():
     """show the available commands."""
-    print("Usage:")
-    print("  add \"description\"   add a new task")
-    print("  list                 list all tasks")
-    print("  help                 show this message")
+    print("Usage: tasker <command> [arguments]")
+    print()
+    print("Tasks:")
+    print("  add \"description\"         add a new task")
+    print("  update ID \"description\"   change a task's description")
+    print("  delete ID                 remove a task")
+    print()
+    print("Organising:")
+    print("  mark ID status            set status: to-do, in-progress, done")
+    print("  set-type ID type          give a task a type, e.g. shopping")
+    print()
+    print("Listing:")
+    print("  list                      list all tasks")
+    print("  list type                 show every type in use")
+    print("  list type TYPE            list tasks of one type")
+    print()
+    print("  help                      show this message")
 
 # ---
 # TO RUN APP
@@ -187,16 +265,6 @@ def parse_id(text):
         print("Error: id must be a number.")
         return None
 
-
-def print_help():
-    """show the available commands."""
-    print("Usage:")
-    print("  add \"description\"    add a new task")
-    print("  mark ID status       set a task's status (to-do, in-progress, done)")
-    print("  list                 list all tasks")
-    print("  help                 show this message")
-
-
 def main():
     # no command given at all
     if len(sys.argv) < 2:
@@ -206,7 +274,6 @@ def main():
     command = sys.argv[1]
     args = sys.argv[2:]   # everything after the command
 
-    # adding a task
     if command == "add":
         if not args:
             print("Error: add needs a description.")
@@ -214,7 +281,25 @@ def main():
         new_id = add_task(args[0])
         print(f"Task added successfully (ID: {new_id})")
 
-    # changing the status
+    elif command == "update":
+        if len(args) < 2:
+            print("Error: update needs an id and a new description.")
+            print("  e.g. update 1 \"Buy groceries and cook dinner\"")
+            return
+        task_id = parse_id(args[0])
+        if task_id is None:
+            return
+        update_task(task_id, args[1])
+
+    elif command == "delete":
+        if not args:
+            print("Error: delete needs an id.")
+            return
+        task_id = parse_id(args[0])
+        if task_id is None:
+            return
+        delete_task(task_id)
+
     elif command == "mark":
         if len(args) < 2:
             print("Error: mark needs an id and a status.")
@@ -225,36 +310,35 @@ def main():
             return
         mark_task(task_id, args[1])
 
-    # listing all tasks
-    elif command == "list":
-        list_all_tasks()
-
-    # listing all commands
-    elif command == "help":
-        print_help()
-
-    # updating the task
-    elif command == "update":
+    elif command == "set-type":
         if len(args) < 2:
-                print("Error: update needs //example//.")
-                print("  e.g. //")
-                return
-        task_id = parse_id(args[0])
-        if task_id is None:
-                return
-        update_task(task_id, args[1])
-
-    # deleting the task
-    elif command == "delete":
+            print("Error: set-type needs an id and a type.")
+            print("  e.g. set-type 1 shopping")
+            return
         task_id = parse_id(args[0])
         if task_id is None:
             return
-        delete_task(task_id)
-        pass
+        set_type(task_id, args[1])
+
+    elif command == "list":
+        if not args:
+            list_all_tasks()
+        elif args[0] == "type":
+            if len(args) < 2:
+                list_types()
+            else:
+                list_by_type(args[1])
+        else:
+            print(f"Unknown list option: {args[0]}")
+            print("  try: list, list type, list type TYPE")
+
+    elif command == "help":
+        print_help()
 
     else:
         print(f"Unknown command: {command}")
         print_help()
+
 
 if __name__ == "__main__":
     main()
